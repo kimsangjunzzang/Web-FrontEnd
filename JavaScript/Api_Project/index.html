@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="kor">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 1</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <p>1. 날씨를 보고 싶은 위치의 위도와 경도를 입력하고 검색한다</p>
+    <p>2. 궁금한 지역 버튼을 클릭하면 해당 지역 정보가 나온다</p>
+    <section class="container">
+      <h1 style="font-size: 20px">위도 경도로 날씨 찾기</h1>
+      <div class="input-screen">
+        <div class="input-value-screen">
+          <input type="number" id="lat-input" placeholder="lat" />
+          <input type="number" id="lon-input" placeholder="lon" />
+          <button id="confirm-button" type="button">Go!</button>
+        </div>
+
+        <div class="country-button">
+          <div type="div" id="seoul">서울</div>
+
+          <div type="div" id="jeju">제주</div>
+
+          <div type="div" id="A">서울</div>
+        </div>
+      </div>
+      <div id="result-screen">
+        <div id="result-content">결과 창</div>
+      </div>
+    </section>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N"
+      crossorigin="anonymous"
+    ></script>
+    <script src="main.js"></script>
+  </body>
+</html>

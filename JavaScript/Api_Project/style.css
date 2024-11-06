@@ -1,0 +1,65 @@
+body {
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
+p {
+  color: wheat;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  max-height: 60vh;
+  min-height: 60vh;
+  max-width: 42vh;
+
+  border: 1px solid black;
+  border-radius: 5%;
+}
+#input-screen {
+  display: grid;
+  max-width: 45vh;
+  min-width: 45vh;
+  flex-direction: column;
+}
+.result-content {
+  padding: 3px;
+}
+.input-value-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 1em;
+  cursor: pointer;
+}
+.input-value-screen button {
+  margin-top: 1em;
+}
+#result-screen {
+  margin-top: 1em;
+  width: 40vh;
+  height: 100px;
+  border: 2px solid teal;
+}
+.country-button {
+  flex-direction: row;
+  display: flex;
+}
+.country-button div {
+  width: 10vh;
+  height: 4vh;
+  border: 1px solid black;
+  text-align: center;
+  margin: 1em;
+  background-color: beige;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 5%;
+}
