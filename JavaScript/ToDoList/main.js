@@ -7,7 +7,7 @@
 //전체탭을 누르면 다시 전체아이템으로 돌아옴
 let userInput = document.querySelector(".task-input");
 let addButton = document.querySelector(".button-add");
-let tabs = document.querySelectorAll(".tab-type div");
+let tabs = document.querySelectorAll(".tab-type");
 let underLine = document.getElementById("tab-underline");
 let taskList = [];
 let selectedMenu = "tab-all";
