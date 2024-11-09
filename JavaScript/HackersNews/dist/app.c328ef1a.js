@@ -118,41 +118,47 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"app.js":[function(require,module,exports) {
-var container = document.getElementById('root');
+var container = document.getElementById("root");
 var ajax = new XMLHttpRequest();
-var content = document.createElement('div');
+var content = document.createElement("div");
 
 // MARK: API
-var NEWS_URL = "https://api.hnpwa.com/v0/news/1.json";
+var NEWS_URL = "https://api.hnpwa.com//v0/news/1.json";
 var CONTENT_URL = "https://api.hnpwa.com/v0/item/@id.json";
-
-// MARK: Func
-function ContentLoad() {}
-;
-function getData(url) {}
-;
-var ul = document.createElement('ul');
-var newsFeed = getData(NEWS_URL);
-window.addEventListener('hashchange', ContentLoad);
-for (var i = 0; i < 10; i++) {
-  var div = document.createElement('div');
-  div.innerHTML = "\n   <li>\n    <a href=\"#".concat(newsFeed[i].id, "\">\n      ").concat(newsFeed[i].title, " (").concat(newsFeed[i].comments_count, ")\n    </a>\n  </li>\n  ");
-  ul.appendChild(div.firstElementChild);
-}
-container.appendChild(ul);
-container.appendChild(content);
+var ul = document.createElement("ul");
 function getData(url) {
-  ajax.open('GET', url, false);
+  ajax.open("GET", url, false);
   ajax.send();
   return JSON.parse(ajax.response);
 }
-function ContentLoad() {
+function newsFeed() {
+  var newsFeed = getData(NEWS_URL);
+  var newsList = [];
+  newsList.push("<ul>");
+  for (var i = 0; i < 10; i++) {
+    newsList.push("\n   <li>\n    <a href=\"#".concat(newsFeed[i].id, "\">\n      ").concat(newsFeed[i].title, " (").concat(newsFeed[i].comments_count, ")\n    </a>\n  </li>\n  "));
+  }
+  newsList.push("</ul>");
+  container.innerHTML = newsList.join("");
+}
+function newsDetail() {
   var id = location.hash.substring(1);
-  var newsContnet = getData(CONTENT_URL.replace('@id', id));
-  var title = this.document.createElement('h1');
+  var newsContnet = getData(CONTENT_URL.replace("@id", id));
+  var title = this.document.createElement("h1");
+  container.innerHTML = "\n  <h1>".concat(newsContnet.title, "</h1>\n  <div>\n    <a href = \"a\">\uBAA9\uB85D\uC73C\uB85C</a>\n  </div>\n  ");
   title.innerHTML = newsContnet.title;
   content.appendChild(title);
 }
+function router() {
+  var routePath = location.hash;
+  if (routePath === "") {
+    newsFeed();
+  } else {
+    newsDetail();
+  }
+}
+window.addEventListener("hashchange", router);
+router();
 },{}],"../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
