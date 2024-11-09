@@ -121,40 +121,41 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 var container = document.getElementById("root");
 var ajax = new XMLHttpRequest();
 var content = document.createElement("div");
-
-// MARK: API
-var NEWS_URL = "https://api.hnpwa.com//v0/news/1.json";
+var NEWS_URL = "https://api.hnpwa.com/v0/news/1.json";
 var CONTENT_URL = "https://api.hnpwa.com/v0/item/@id.json";
-var ul = document.createElement("ul");
+var store = {
+  currentPage: 1
+};
 function getData(url) {
   ajax.open("GET", url, false);
   ajax.send();
   return JSON.parse(ajax.response);
 }
-function newsFeed() {
+function loadNewsFeed() {
   var newsFeed = getData(NEWS_URL);
   var newsList = [];
   newsList.push("<ul>");
-  for (var i = 0; i < 10; i++) {
-    newsList.push("\n   <li>\n    <a href=\"#".concat(newsFeed[i].id, "\">\n      ").concat(newsFeed[i].title, " (").concat(newsFeed[i].comments_count, ")\n    </a>\n  </li>\n  "));
+  for (var i = (store.currentPage - 1) * 10; i < store.currentPage * 10; i++) {
+    newsList.push("\n   <li>\n    <a href=\"#/show/".concat(newsFeed[i].id, "\">\n      ").concat(newsFeed[i].title, " (").concat(newsFeed[i].comments_count, ")\n    </a>\n  </li>\n  "));
   }
   newsList.push("</ul>");
+  newsList.push("\n    <div>\n      <a href =\"#/page/".concat(store.currentPage > 1 ? store.currentPage - 1 : 1, "\">\uC774\uC804 \uD398\uC774\uC9C0</a>\n      <a href =\"#/page/").concat(store.currentPage - 1, "\">\uB2E4\uC74C \uD398\uC774\uC9C0</a>\n    </div>\n    "));
   container.innerHTML = newsList.join("");
 }
-function newsDetail() {
-  var id = location.hash.substring(1);
+function loadNewsDetail() {
+  var id = location.hash.substring(7);
   var newsContnet = getData(CONTENT_URL.replace("@id", id));
-  var title = this.document.createElement("h1");
-  container.innerHTML = "\n  <h1>".concat(newsContnet.title, "</h1>\n  <div>\n    <a href = \"a\">\uBAA9\uB85D\uC73C\uB85C</a>\n  </div>\n  ");
-  title.innerHTML = newsContnet.title;
-  content.appendChild(title);
+  container.innerHTML = "\n  <h1>".concat(newsContnet.title, "</h1>\n  <div>\n    <a href = \"#/page/").concat(store.currentPage, "\">\uBAA9\uB85D\uC73C\uB85C</a>\n  </div>\n  ");
 }
 function router() {
   var routePath = location.hash;
   if (routePath === "") {
-    newsFeed();
+    loadNewsFeed();
+  } else if (routePath.indexOf("#/page/") >= 0) {
+    store.currentPage = Number(routePath.substring(7));
+    loadNewsFeed();
   } else {
-    newsDetail();
+    loadNewsDetail();
   }
 }
 window.addEventListener("hashchange", router);
@@ -184,7 +185,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50166" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62095" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
