@@ -129,30 +129,30 @@ var CONTENT_URL = "https://api.hnpwa.com/v0/item/@id.json";
 // MARK: Func
 function ContentLoad() {}
 ;
-ajax.open('GET', NEWS_URL, false);
-ajax.send();
-var newsFeed = JSON.parse(ajax.response);
+function getData(url) {}
+;
 var ul = document.createElement('ul');
+var newsFeed = getData(NEWS_URL);
 window.addEventListener('hashchange', ContentLoad);
 for (var i = 0; i < 10; i++) {
-  var li = document.createElement('li');
-  var a = document.createElement('a');
-  a.href = "#".concat(newsFeed[i].id);
-  a.innerHTML = "".concat(newsFeed[i].title, " (").concat(newsFeed[i].comments_count, ")");
-  li.appendChild(a);
-  ul.appendChild(li);
+  var div = document.createElement('div');
+  div.innerHTML = "\n   <li>\n    <a href=\"#".concat(newsFeed[i].id, "\">\n      ").concat(newsFeed[i].title, " (").concat(newsFeed[i].comments_count, ")\n    </a>\n  </li>\n  ");
+  ul.appendChild(div.firstElementChild);
+}
+container.appendChild(ul);
+container.appendChild(content);
+function getData(url) {
+  ajax.open('GET', url, false);
+  ajax.send();
+  return JSON.parse(ajax.response);
 }
 function ContentLoad() {
   var id = location.hash.substring(1);
-  ajax.open('GET', CONTENT_URL.replace('@id', id), false);
-  ajax.send();
-  var newsContnet = JSON.parse(ajax.response);
+  var newsContnet = getData(CONTENT_URL.replace('@id', id));
   var title = this.document.createElement('h1');
   title.innerHTML = newsContnet.title;
   content.appendChild(title);
 }
-container.appendChild(ul);
-container.appendChild(content);
 },{}],"../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -178,7 +178,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53333" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50166" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

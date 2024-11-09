@@ -8,38 +8,40 @@ const CONTENT_URL = "https://api.hnpwa.com/v0/item/@id.json";
 
 // MARK: Func
 function ContentLoad(){};
+function getData(url){};
 
-ajax.open('GET',NEWS_URL,false);
-ajax.send();
-
-const newsFeed = JSON.parse(ajax.response);
 const ul = document.createElement('ul');
+const newsFeed = getData(NEWS_URL);
 
 window.addEventListener('hashchange',ContentLoad);
 
 for ( let i =0; i<10; i++) {
-  const li = document.createElement('li');
-  const a = document.createElement('a');
+  const div = document.createElement('div');
 
-  a.href = `#${newsFeed[i].id}`;
-  a.innerHTML = `${newsFeed[i].title} (${newsFeed[i].comments_count})`;
-
-  li.appendChild(a);
-  ul.appendChild(li);
-}
-
-function ContentLoad(){
-  let id = location.hash.substring(1);
-  ajax.open('GET',CONTENT_URL.replace('@id',id),false);
-  ajax.send();
-
-  const newsContnet = JSON.parse(ajax.response);
-  const title = this.document.createElement('h1');
-
-  title.innerHTML = newsContnet.title;
-  content.appendChild(title); 
+  div.innerHTML = `
+   <li>
+    <a href="#${newsFeed[i].id}">
+      ${newsFeed[i].title} (${newsFeed[i].comments_count})
+    </a>
+  </li>
+  `;
+  ul.appendChild(div.firstElementChild);
 }
 
 container.appendChild(ul);
 container.appendChild(content);
 
+function getData(url) {
+  ajax.open('GET',url,false);
+  ajax.send();
+  return JSON.parse(ajax.response);
+}
+
+function ContentLoad(){
+  let id = location.hash.substring(1);
+  const newsContnet = getData(CONTENT_URL.replace('@id',id));
+  const title = this.document.createElement('h1');
+
+  title.innerHTML = newsContnet.title;
+  content.appendChild(title); 
+}
