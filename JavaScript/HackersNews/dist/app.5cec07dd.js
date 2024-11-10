@@ -120,66 +120,59 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 })({"src/core/router.ts":[function(require,module,exports) {
 "use strict";
 
-var __values = this && this.__values || function (o) {
-  var s = typeof Symbol === "function" && Symbol.iterator,
-    m = s && o[s],
-    i = 0;
-  if (m) return m.call(o);
-  if (o && typeof o.length === "number") return {
-    next: function next() {
-      if (o && i >= o.length) o = void 0;
-      return {
-        value: o && o[i++],
-        done: !o
-      };
-    }
-  };
-  throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var Router = /** @class */function () {
   function Router() {
-    window.addEventListener("hashchange", this.route.bind(this));
-    this.routeTable = [];
+    window.addEventListener('hashchange', this.route.bind(this));
+    this.isStart = false;
     this.defaultRoute = null;
+    this.routeTable = [];
   }
-  Router.prototype.setDefaultPage = function (page) {
+  Router.prototype.setDefaultPage = function (page, params) {
+    if (params === void 0) {
+      params = null;
+    }
     this.defaultRoute = {
-      path: "",
-      page: page
+      path: '',
+      page: page,
+      params: params
     };
   };
-  Router.prototype.addRoutePath = function (path, page) {
+  Router.prototype.addRoutePath = function (path, page, params) {
+    if (params === void 0) {
+      params = null;
+    }
     this.routeTable.push({
       path: path,
-      page: page
+      page: page,
+      params: params
     });
+    if (!this.isStart) {
+      this.isStart = true;
+      // Execute next tick
+      setTimeout(this.route.bind(this), 0);
+    }
   };
   Router.prototype.route = function () {
-    var e_1, _a;
     var routePath = location.hash;
-    if (routePath === "" && this.defaultRoute) {
+    if (routePath === '' && this.defaultRoute) {
       this.defaultRoute.page.render();
+      return;
     }
-    try {
-      for (var _b = __values(this.routeTable), _c = _b.next(); !_c.done; _c = _b.next()) {
-        var routeInfo = _c.value;
-        if (routePath.indexOf(routeInfo.path) >= 0) {
+    for (var _i = 0, _a = this.routeTable; _i < _a.length; _i++) {
+      var routeInfo = _a[_i];
+      if (routePath.indexOf(routeInfo.path) >= 0) {
+        if (routeInfo.params) {
+          var parseParams = routePath.match(routeInfo.params);
+          if (parseParams) {
+            routeInfo.page.render.apply(null, [parseParams[1]]);
+          }
+        } else {
           routeInfo.page.render();
-          break;
         }
-      }
-    } catch (e_1_1) {
-      e_1 = {
-        error: e_1_1
-      };
-    } finally {
-      try {
-        if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-      } finally {
-        if (e_1) throw e_1.error;
+        return;
       }
     }
   };
@@ -194,11 +187,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 var View = /** @class */function () {
   function View(containerId, template) {
-    var containerElement = document.getElementById(containerId);
-    if (!containerElement) {
-      throw "최상위 컨테이너가 없어 UI를 진행하지 못합니다.";
+    var conatinerElement = document.getElementById(containerId);
+    if (!conatinerElement) {
+      throw '최상위 컨테이너가 없어 UI를 진행하지 못합니다.';
     }
-    this.container = containerElement;
+    this.container = conatinerElement;
     this.template = template;
     this.renderTemplate = template;
     this.htmlList = [];
@@ -211,7 +204,7 @@ var View = /** @class */function () {
     this.htmlList.push(htmlString);
   };
   View.prototype.getHtml = function () {
-    var snapshot = this.htmlList.join("");
+    var snapshot = this.htmlList.join('');
     this.clearHtmlList();
     return snapshot;
   };
@@ -224,6 +217,15 @@ var View = /** @class */function () {
   return View;
 }();
 exports.default = View;
+},{}],"src/config.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CONTENT_URL = exports.NEWS_URL = void 0;
+exports.NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
+exports.CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json';
 },{}],"src/core/api.ts":[function(require,module,exports) {
 "use strict";
 
@@ -247,55 +249,176 @@ var __extends = this && this.__extends || function () {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
 }();
+var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+var __generator = this && this.__generator || function (thisArg, body) {
+  var _ = {
+      label: 0,
+      sent: function sent() {
+        if (t[0] & 1) throw t[1];
+        return t[1];
+      },
+      trys: [],
+      ops: []
+    },
+    f,
+    y,
+    t,
+    g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+  return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+    return this;
+  }), g;
+  function verb(n) {
+    return function (v) {
+      return step([n, v]);
+    };
+  }
+  function step(op) {
+    if (f) throw new TypeError("Generator is already executing.");
+    while (g && (g = 0, op[0] && (_ = 0)), _) try {
+      if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+      if (y = 0, t) op = [op[0] & 2, t.value];
+      switch (op[0]) {
+        case 0:
+        case 1:
+          t = op;
+          break;
+        case 4:
+          _.label++;
+          return {
+            value: op[1],
+            done: false
+          };
+        case 5:
+          _.label++;
+          y = op[1];
+          op = [0];
+          continue;
+        case 7:
+          op = _.ops.pop();
+          _.trys.pop();
+          continue;
+        default:
+          if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+            _ = 0;
+            continue;
+          }
+          if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+            _.label = op[1];
+            break;
+          }
+          if (op[0] === 6 && _.label < t[1]) {
+            _.label = t[1];
+            t = op;
+            break;
+          }
+          if (t && _.label < t[2]) {
+            _.label = t[2];
+            _.ops.push(op);
+            break;
+          }
+          if (t[2]) _.ops.pop();
+          _.trys.pop();
+          continue;
+      }
+      op = body.call(thisArg, _);
+    } catch (e) {
+      op = [6, e];
+      y = 0;
+    } finally {
+      f = t = 0;
+    }
+    if (op[0] & 5) throw op[1];
+    return {
+      value: op[0] ? op[1] : void 0,
+      done: true
+    };
+  }
+};
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.NewsDetailApi = exports.NewsFeedApi = exports.Api = void 0;
+exports.NewsDetailApi = exports.NewsFeedApi = void 0;
+var config_1 = require("../config");
 var Api = /** @class */function () {
   function Api(url) {
-    this.ajax = new XMLHttpRequest();
     this.url = url;
   }
-  Api.prototype.getRequest = function () {
-    this.ajax.open("GET", this.url, false);
-    this.ajax.send();
-    return JSON.parse(this.ajax.response);
+  Api.prototype.request = function () {
+    return __awaiter(this, void 0, Promise, function () {
+      var response;
+      return __generator(this, function (_a) {
+        switch (_a.label) {
+          case 0:
+            return [4 /*yield*/, fetch(this.url)];
+          case 1:
+            response = _a.sent();
+            return [4 /*yield*/, response.json()];
+          case 2:
+            return [2 /*return*/, _a.sent()];
+        }
+      });
+    });
   };
   return Api;
 }();
-exports.Api = Api;
+exports.default = Api;
 var NewsFeedApi = /** @class */function (_super) {
   __extends(NewsFeedApi, _super);
   function NewsFeedApi() {
-    return _super !== null && _super.apply(this, arguments) || this;
+    return _super.call(this, config_1.NEWS_URL) || this;
   }
   NewsFeedApi.prototype.getData = function () {
-    return this.getRequest();
+    return __awaiter(this, void 0, Promise, function () {
+      return __generator(this, function (_a) {
+        return [2 /*return*/, this.request()];
+      });
+    });
   };
   return NewsFeedApi;
 }(Api);
 exports.NewsFeedApi = NewsFeedApi;
 var NewsDetailApi = /** @class */function (_super) {
   __extends(NewsDetailApi, _super);
-  function NewsDetailApi() {
-    return _super !== null && _super.apply(this, arguments) || this;
+  function NewsDetailApi(id) {
+    return _super.call(this, config_1.CONTENT_URL.replace('@id', id)) || this;
   }
   NewsDetailApi.prototype.getData = function () {
-    return this.getRequest();
+    return __awaiter(this, void 0, Promise, function () {
+      return __generator(this, function (_a) {
+        return [2 /*return*/, this.request()];
+      });
+    });
   };
   return NewsDetailApi;
 }(Api);
 exports.NewsDetailApi = NewsDetailApi;
-},{}],"src/config.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.CONTENT_URL = exports.NEWS_URL = void 0;
-exports.NEWS_URL = "https://api.hnpwa.com/v0/news/1.json";
-exports.CONTENT_URL = "https://api.hnpwa.com/v0/item/@id.json";
-},{}],"src/page/news-detail-view.ts":[function(require,module,exports) {
+},{"../config":"src/config.ts"}],"src/page/news-detail-view.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -318,6 +441,117 @@ var __extends = this && this.__extends || function () {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
 }();
+var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+var __generator = this && this.__generator || function (thisArg, body) {
+  var _ = {
+      label: 0,
+      sent: function sent() {
+        if (t[0] & 1) throw t[1];
+        return t[1];
+      },
+      trys: [],
+      ops: []
+    },
+    f,
+    y,
+    t,
+    g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+  return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+    return this;
+  }), g;
+  function verb(n) {
+    return function (v) {
+      return step([n, v]);
+    };
+  }
+  function step(op) {
+    if (f) throw new TypeError("Generator is already executing.");
+    while (g && (g = 0, op[0] && (_ = 0)), _) try {
+      if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+      if (y = 0, t) op = [op[0] & 2, t.value];
+      switch (op[0]) {
+        case 0:
+        case 1:
+          t = op;
+          break;
+        case 4:
+          _.label++;
+          return {
+            value: op[1],
+            done: false
+          };
+        case 5:
+          _.label++;
+          y = op[1];
+          op = [0];
+          continue;
+        case 7:
+          op = _.ops.pop();
+          _.trys.pop();
+          continue;
+        default:
+          if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+            _ = 0;
+            continue;
+          }
+          if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+            _.label = op[1];
+            break;
+          }
+          if (op[0] === 6 && _.label < t[1]) {
+            _.label = t[1];
+            t = op;
+            break;
+          }
+          if (t && _.label < t[2]) {
+            _.label = t[2];
+            _.ops.push(op);
+            break;
+          }
+          if (t[2]) _.ops.pop();
+          _.trys.pop();
+          continue;
+      }
+      op = body.call(thisArg, _);
+    } catch (e) {
+      op = [6, e];
+      y = 0;
+    } finally {
+      f = t = 0;
+    }
+    if (op[0] & 5) throw op[1];
+    return {
+      value: op[0] ? op[1] : void 0,
+      done: true
+    };
+  }
+};
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
     "default": mod
@@ -328,29 +562,35 @@ Object.defineProperty(exports, "__esModule", {
 });
 var view_1 = __importDefault(require("../core/view"));
 var api_1 = require("../core/api");
-var config_1 = require("../config");
-var template = "\n      <div class=\"bg-gray-600 min-h-screen pb-8\">\n        <div class=\"bg-white text-xl\">\n          <div class=\"mx-auto px-4\">\n            <div class=\"flex justify-between items-center py-6\">\n              <div class=\"flex justify-start\">\n                <h1 class=\"font-extrabold\">Hacker News</h1>\n              </div>\n              <div class=\"items-center justify-end\">\n                <a href=\"#/page/{{__currentPage__}}\" class=\"text-gray-500\">\n                  <i class=\"fa fa-times\"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n        </div>\n  \n        <div class=\"h-full border rounded-xl bg-white m-6 p-4 \">\n          <h2>{{__title__}}</h2>\n          <div class=\"text-gray-400 h-20\">\n            {{__content__}}\n          </div>\n  \n          {{__comments__}}\n  \n        </div>\n      </div>\n    ";
+var template = "\n<div class=\"bg-gray-600 min-h-screen pb-8\">\n  <div class=\"bg-white text-xl\">\n    <div class=\"mx-auto px-4\">\n      <div class=\"flex justify-between items-center py-6\">\n        <div class=\"flex justify-start\">\n          <h1 class=\"font-extrabold\">Hacker News</h1>\n        </div>\n        <div class=\"items-center justify-end\">\n          <a href=\"#/page/{{__currentPage__}}\" class=\"text-gray-500\">\n            <i class=\"fa fa-times\"></i>\n          </a>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"h-full border rounded-xl bg-white m-6 p-4 \">\n    <h2>{{__title__}}</h2>\n    <div class=\"text-gray-400 h-20\">\n      {{__content__}}\n    </div>\n    {{__comments__}}\n  </div>\n</div>\n";
 var NewsDetailView = /** @class */function (_super) {
   __extends(NewsDetailView, _super);
-  function NewsDetailView(containerId) {
-    return _super.call(this, containerId, template) || this;
+  function NewsDetailView(containerId, store) {
+    var _this = _super.call(this, containerId, template) || this;
+    _this.render = function (id) {
+      return __awaiter(_this, void 0, Promise, function () {
+        var api, _a, title, content, comments;
+        return __generator(this, function (_b) {
+          switch (_b.label) {
+            case 0:
+              api = new api_1.NewsDetailApi(id);
+              return [4 /*yield*/, api.getData()];
+            case 1:
+              _a = _b.sent(), title = _a.title, content = _a.content, comments = _a.comments;
+              this.store.makeRead(Number(id));
+              this.setTemplateData('currentPage', this.store.currentPage.toString());
+              this.setTemplateData('title', title);
+              this.setTemplateData('content', content);
+              this.setTemplateData('comments', this.makeComment(comments));
+              this.updateView();
+              return [2 /*return*/];
+          }
+        });
+      });
+    };
+    _this.store = store;
+    return _this;
   }
-  NewsDetailView.prototype.render = function () {
-    var id = location.hash.substr(7);
-    var api = new api_1.NewsDetailApi(config_1.CONTENT_URL.replace("@id", id));
-    var newsDetail = api.getData();
-    for (var i = 0; i < window.store.feeds.length; i++) {
-      if (window.store.feeds[i].id === Number(id)) {
-        window.store.feeds[i].read = true;
-        break;
-      }
-    }
-    this.setTemplateData("comments", this.makeComment(newsDetail.comments));
-    this.setTemplateData("currentPage", String(window.store.currentPage));
-    this.setTemplateData("title", newsDetail.title);
-    this.setTemplateData("content", newsDetail.content);
-    this.updateView();
-  };
   NewsDetailView.prototype.makeComment = function (comments) {
     for (var i = 0; i < comments.length; i++) {
       var comment = comments[i];
@@ -364,7 +604,7 @@ var NewsDetailView = /** @class */function (_super) {
   return NewsDetailView;
 }(view_1.default);
 exports.default = NewsDetailView;
-},{"../core/view":"src/core/view.ts","../core/api":"src/core/api.ts","../config":"src/config.ts"}],"src/page/news-feed-view.ts":[function(require,module,exports) {
+},{"../core/view":"src/core/view.ts","../core/api":"src/core/api.ts"}],"src/page/news-feed-view.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -387,6 +627,126 @@ var __extends = this && this.__extends || function () {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
 }();
+var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+var __generator = this && this.__generator || function (thisArg, body) {
+  var _ = {
+      label: 0,
+      sent: function sent() {
+        if (t[0] & 1) throw t[1];
+        return t[1];
+      },
+      trys: [],
+      ops: []
+    },
+    f,
+    y,
+    t,
+    g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+  return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+    return this;
+  }), g;
+  function verb(n) {
+    return function (v) {
+      return step([n, v]);
+    };
+  }
+  function step(op) {
+    if (f) throw new TypeError("Generator is already executing.");
+    while (g && (g = 0, op[0] && (_ = 0)), _) try {
+      if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+      if (y = 0, t) op = [op[0] & 2, t.value];
+      switch (op[0]) {
+        case 0:
+        case 1:
+          t = op;
+          break;
+        case 4:
+          _.label++;
+          return {
+            value: op[1],
+            done: false
+          };
+        case 5:
+          _.label++;
+          y = op[1];
+          op = [0];
+          continue;
+        case 7:
+          op = _.ops.pop();
+          _.trys.pop();
+          continue;
+        default:
+          if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+            _ = 0;
+            continue;
+          }
+          if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+            _.label = op[1];
+            break;
+          }
+          if (op[0] === 6 && _.label < t[1]) {
+            _.label = t[1];
+            t = op;
+            break;
+          }
+          if (t && _.label < t[2]) {
+            _.label = t[2];
+            _.ops.push(op);
+            break;
+          }
+          if (t[2]) _.ops.pop();
+          _.trys.pop();
+          continue;
+      }
+      op = body.call(thisArg, _);
+    } catch (e) {
+      op = [6, e];
+      y = 0;
+    } finally {
+      f = t = 0;
+    }
+    if (op[0] & 5) throw op[1];
+    return {
+      value: op[0] ? op[1] : void 0,
+      done: true
+    };
+  }
+};
+var __spreadArray = this && this.__spreadArray || function (to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
+    }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
+};
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
     "default": mod
@@ -397,47 +757,53 @@ Object.defineProperty(exports, "__esModule", {
 });
 var view_1 = __importDefault(require("../core/view"));
 var api_1 = require("../core/api");
-var config_1 = require("../config");
-var template = "\n      <div class=\"bg-gray-600 min-h-screen\">\n        <div class=\"bg-white text-xl\">\n          <div class=\"mx-auto px-4\">\n            <div class=\"flex justify-between items-center py-6\">\n              <div class=\"flex justify-start\">\n                <h1 class=\"font-extrabold\">Hacker News</h1>\n              </div>\n              <div class=\"items-center justify-end\">\n                <a href=\"#/page/{{__prev_page__}}\" class=\"text-gray-500\">\n                  Previous\n                </a>\n                <a href=\"#/page/{{__next_page__}}\" class=\"text-gray-500 ml-4\">\n                  Next\n                </a>\n              </div>\n            </div> \n          </div>\n        </div>\n        <div class=\"p-4 text-2xl text-gray-700\">\n          {{__news_feed__}}        \n        </div>\n      </div>\n    ";
+var template = "\n<div class=\"bg-gray-600 min-h-screen\">\n  <div class=\"bg-white text-xl\">\n    <div class=\"mx-auto px-4\">\n      <div class=\"flex justify-between items-center py-6\">\n        <div class=\"flex justify-start\">\n          <h1 class=\"font-extrabold\">Hacker News</h1>\n        </div>\n        <div class=\"items-center justify-end\">\n          <a href=\"#/page/{{__prev_page__}}\" class=\"text-gray-500\">\n            Previous\n          </a>\n          <a href=\"#/page/{{__next_page__}}\" class=\"text-gray-500 ml-4\">\n            Next\n          </a>\n        </div>\n      </div> \n    </div>\n  </div>\n  <div class=\"p-4 text-2xl text-gray-700\">\n    {{__news_feed__}}        \n  </div>\n</div>\n";
 var NewsFeedView = /** @class */function (_super) {
   __extends(NewsFeedView, _super);
-  function NewsFeedView(containerId) {
+  function NewsFeedView(containerId, store) {
     var _this = _super.call(this, containerId, template) || this;
-    _this.api = new api_1.NewsFeedApi(config_1.NEWS_URL);
-    _this.feeds = window.store.feeds;
-    if (_this.feeds.length === 0) {
-      _this.feeds = window.store.feeds = _this.api.getData();
-      _this.makeFeeds();
-    }
+    _this.render = function () {
+      var args_1 = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args_1[_i] = arguments[_i];
+      }
+      return __awaiter(_this, __spreadArray([], args_1, true), Promise, function (page) {
+        var _a, _b, i, _c, id, title, comments_count, user, points, time_ago, read;
+        if (page === void 0) {
+          page = '1';
+        }
+        return __generator(this, function (_d) {
+          switch (_d.label) {
+            case 0:
+              this.store.currentPage = Number(page);
+              if (!!this.store.hasFeeds) return [3 /*break*/, 2];
+              _b = (_a = this.store).setFeeds;
+              return [4 /*yield*/, this.api.getData()];
+            case 1:
+              _b.apply(_a, [_d.sent()]);
+              _d.label = 2;
+            case 2:
+              for (i = (this.store.currentPage - 1) * 10; i < this.store.currentPage * 10; i++) {
+                _c = this.store.getFeed(i), id = _c.id, title = _c.title, comments_count = _c.comments_count, user = _c.user, points = _c.points, time_ago = _c.time_ago, read = _c.read;
+                this.addHtml("\n        <div class=\"p-6 ".concat(read ? 'bg-red-500' : 'bg-white', " mt-6 rounded-lg shadow-md transition-colors duration-500 hover:bg-green-100\">\n          <div class=\"flex\">\n            <div class=\"flex-auto\">\n              <a href=\"#/show/").concat(id, "\">").concat(title, "</a>  \n            </div>\n            <div class=\"text-center text-sm\">\n              <div class=\"w-10 text-white bg-green-300 rounded-lg px-0 py-2\">").concat(comments_count, "</div>\n            </div>\n          </div>\n          <div class=\"flex mt-3\">\n            <div class=\"grid grid-cols-3 text-sm text-gray-500\">\n              <div><i class=\"fas fa-user mr-1\"></i>").concat(user, "</div>\n              <div><i class=\"fas fa-heart mr-1\"></i>").concat(points, "</div>\n              <div><i class=\"far fa-clock mr-1\"></i>").concat(time_ago, "</div>\n            </div>  \n          </div>\n        </div>    \n      "));
+              }
+              this.setTemplateData('news_feed', this.getHtml());
+              this.setTemplateData('prev_page', String(this.store.prevPage));
+              this.setTemplateData('next_page', String(this.store.nextPage));
+              this.updateView();
+              return [2 /*return*/];
+          }
+        });
+      });
+    };
+    _this.store = store;
+    _this.api = new api_1.NewsFeedApi();
     return _this;
   }
-  NewsFeedView.prototype.render = function () {
-    window.store.currentPage = Number(location.hash.substr(7) || 1);
-    for (var i = (window.store.currentPage - 1) * 10; i < window.store.currentPage * 10; i++) {
-      var _a = this.feeds[i],
-        id = _a.id,
-        title = _a.title,
-        comments_count = _a.comments_count,
-        user = _a.user,
-        points = _a.points,
-        time_ago = _a.time_ago,
-        read = _a.read;
-      this.addHtml("\n        <div class=\"p-6 ".concat(read ? "bg-red-500" : "bg-white", " mt-6 rounded-lg shadow-md transition-colors duration-500 hover:bg-green-100\">\n          <div class=\"flex\">\n            <div class=\"flex-auto\">\n              <a href=\"#/show/").concat(id, "\">").concat(title, "</a>  \n            </div>\n            <div class=\"text-center text-sm\">\n              <div class=\"w-10 text-white bg-green-300 rounded-lg px-0 py-2\">").concat(comments_count, "</div>\n            </div>\n          </div>\n          <div class=\"flex mt-3\">\n            <div class=\"grid grid-cols-3 text-sm text-gray-500\">\n              <div><i class=\"fas fa-user mr-1\"></i>").concat(user, "</div>\n              <div><i class=\"fas fa-heart mr-1\"></i>").concat(points, "</div>\n              <div><i class=\"far fa-clock mr-1\"></i>").concat(time_ago, "</div>\n            </div>  \n          </div>\n        </div>    \n      "));
-    }
-    this.setTemplateData("news_feed", this.getHtml());
-    this.setTemplateData("prev_page", String(window.store.currentPage > 1 ? window.store.currentPage - 1 : 1));
-    this.setTemplateData("next_page", String(window.store.currentPage + 1));
-    this.updateView();
-  };
-  NewsFeedView.prototype.makeFeeds = function () {
-    for (var i = 0; i < this.feeds.length; i++) {
-      this.feeds[i].read = false;
-    }
-  };
   return NewsFeedView;
 }(view_1.default);
 exports.default = NewsFeedView;
-},{"../core/view":"src/core/view.ts","../core/api":"src/core/api.ts","../config":"src/config.ts"}],"src/page/index.ts":[function(require,module,exports) {
+},{"../core/view":"src/core/view.ts","../core/api":"src/core/api.ts"}],"src/page/index.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -463,7 +829,92 @@ Object.defineProperty(exports, "NewsFeedView", {
     return __importDefault(news_feed_view_1).default;
   }
 });
-},{"./news-detail-view":"src/page/news-detail-view.ts","./news-feed-view":"src/page/news-feed-view.ts"}],"src/app.ts":[function(require,module,exports) {
+},{"./news-detail-view":"src/page/news-detail-view.ts","./news-feed-view":"src/page/news-feed-view.ts"}],"src/store.ts":[function(require,module,exports) {
+"use strict";
+
+var __assign = this && this.__assign || function () {
+  __assign = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+    }
+    return t;
+  };
+  return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Store = void 0;
+var Store = /** @class */function () {
+  function Store() {
+    var _this = this;
+    this.setFeeds = function (feeds) {
+      _this.feeds = feeds.map(function (feed) {
+        return __assign(__assign({}, feed), {
+          read: false
+        });
+      });
+    };
+    this.feeds = [];
+    this._currentPage = 1;
+  }
+  Object.defineProperty(Store.prototype, "currentPage", {
+    get: function get() {
+      return this._currentPage;
+    },
+    set: function set(page) {
+      this._currentPage = page;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "nextPage", {
+    get: function get() {
+      return this._currentPage + 1;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "prevPage", {
+    get: function get() {
+      return this._currentPage > 1 ? this._currentPage - 1 : 1;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "numberOfFeed", {
+    get: function get() {
+      return this.feeds.length;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "hasFeeds", {
+    get: function get() {
+      return this.feeds.length > 0;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Store.prototype.getFeed = function (position) {
+    return this.feeds[position];
+  };
+  Store.prototype.getAllFeeds = function () {
+    return this.feeds;
+  };
+  Store.prototype.makeRead = function (id) {
+    var feed = this.feeds.find(function (feed) {
+      return feed.id === id;
+    });
+    if (feed) {
+      feed.read = true;
+    }
+  };
+  return Store;
+}();
+exports.Store = Store;
+},{}],"src/app.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -476,19 +927,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 var router_1 = __importDefault(require("./core/router"));
 var page_1 = require("./page");
-var store = {
-  currentPage: 1,
-  feeds: []
-};
-window.store = store;
+var store_1 = require("./store");
+var store = new store_1.Store();
 var router = new router_1.default();
-var newsFeedView = new page_1.NewsFeedView("root");
-var newsDetailView = new page_1.NewsDetailView("root");
+var newsFeedView = new page_1.NewsFeedView('root', store);
+var newsDetailView = new page_1.NewsDetailView('root', store);
 router.setDefaultPage(newsFeedView);
-router.addRoutePath("/page/", newsFeedView);
-router.addRoutePath("/show/", newsDetailView);
-router.route();
-},{"./core/router":"src/core/router.ts","./page":"src/page/index.ts"}],"../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+router.addRoutePath('/page/', newsFeedView, /page\/(\d+)/);
+router.addRoutePath('/show/', newsDetailView, /show\/(\d+)/);
+},{"./core/router":"src/core/router.ts","./page":"src/page/index.ts","./store":"src/store.ts"}],"../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -513,7 +960,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65435" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56044" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
