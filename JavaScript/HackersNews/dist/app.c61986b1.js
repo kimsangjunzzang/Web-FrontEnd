@@ -118,6 +118,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"app.ts":[function(require,module,exports) {
+"use strict";
+
 var container = document.getElementById("root");
 var ajax = new XMLHttpRequest();
 var NEWS_URL = "https://api.hnpwa.com/v0/news/1.json";
@@ -137,6 +139,13 @@ function makeFeeds(feeds) {
   }
   return feeds;
 }
+function updateView(html) {
+  if (container) {
+    container.innerHTML = html;
+  } else {
+    console.log("최상위 컨테이너가 없어 UI를 진행하지 못합니");
+  }
+}
 function newsFeed() {
   var newsFeed = store.feeds;
   var newsList = [];
@@ -150,7 +159,7 @@ function newsFeed() {
   template = template.replace("{{__news_feed__}}", newsList.join(""));
   template = template.replace("{{__prev_page__}}", store.currentPage > 1 ? store.currentPage - 1 : 1);
   template = template.replace("{{__next_page__}}", store.currentPage + 1);
-  container.innerHTML = template;
+  updateView(template);
 }
 function newsDetail() {
   var id = location.hash.substr(7);
@@ -175,7 +184,7 @@ function newsDetail() {
     }
     return commentString.join("");
   }
-  container.innerHTML = template.replace("{{__comments__}}", makeComment(newsContent.comments));
+  updateView(template.replace("{{__comments__}}", makeComment(newsContent.comments)));
 }
 function router() {
   var routePath = location.hash;
