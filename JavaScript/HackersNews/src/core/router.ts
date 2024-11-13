@@ -1,5 +1,5 @@
-import { RouteInfo } from '../types';
-import View from './view';
+import { RouteInfo } from "../types";
+import View from "./view";
 
 export default class Router {
   private isStart: boolean;
@@ -7,8 +7,8 @@ export default class Router {
   routeTable: RouteInfo[];
 
   constructor() {
-    window.addEventListener('hashchange', this.route.bind(this));
-    
+    window.addEventListener("hashchange", this.route.bind(this));
+
     this.isStart = false;
     this.defaultRoute = null;
     this.routeTable = [];
@@ -16,8 +16,8 @@ export default class Router {
 
   setDefaultPage(page: View, params: RegExp | null = null): void {
     this.defaultRoute = {
-      path: '', 
-      page, 
+      path: "",
+      page,
       params,
     };
   }
@@ -34,25 +34,25 @@ export default class Router {
 
   private route() {
     const routePath: string = location.hash;
-    
-    if (routePath === '' && this.defaultRoute) {
+
+    if (routePath === "" && this.defaultRoute) {
       this.defaultRoute.page.render();
       return;
     }
 
-    for(const routeInfo of this.routeTable) {
-      if (routePath.indexOf(routeInfo.path) >= 0) {        
+    for (const routeInfo of this.routeTable) {
+      if (routePath.indexOf(routeInfo.path) >= 0) {
         if (routeInfo.params) {
           const parseParams = routePath.match(routeInfo.params);
 
           if (parseParams) {
             routeInfo.page.render.apply(null, [parseParams[1]]);
-          }          
+          }
         } else {
           routeInfo.page.render();
-        }       
+        }
         return;
-      }  
+      }
     }
   }
 }
