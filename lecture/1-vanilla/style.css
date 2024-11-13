@@ -27,7 +27,7 @@ header {
   text-align: center;
 }
 
-input[type="text"] {
+input[type=text] {
   display: block;
   box-sizing: border-box;
   width: 100%;
@@ -36,6 +36,7 @@ input[type="text"] {
   font-size: 14px;
   line-height: 1.5;
   border: 1px solid #cccccc;
+
 }
 
 .content {
@@ -119,13 +120,14 @@ form {
 
 .btn-reset::before,
 .btn-remove::before {
-  content: "X";
+  content: 'X'
 }
 
 .result li {
   display: flex;
   margin-bottom: 16px;
   height: 80px;
+
 }
 
 .result li:last-child {
