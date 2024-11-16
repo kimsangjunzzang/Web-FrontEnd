@@ -35,8 +35,10 @@ function createTodoItem(text) {
   checkbox.type = "checkbox";
   listItemText.textContent = text;
   editBtn.textContent = "Edit";
+  editBtn.className = "edit-btn";
 
   editBtn.addEventListener("click", editTodoItem);
+  checkbox.addEventListener("change", saveTodos);
 
   todoContent.appendChild(checkbox);
   todoContent.appendChild(listItemText);

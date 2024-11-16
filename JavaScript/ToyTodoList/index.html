@@ -1,17 +1,37 @@
 <!DOCTYPE html>
-<html lang="kor">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ToDoList</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Todo List</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <h1>오늘의 할일</h1>
-    <input type="text" id="inputField" />
-    <button id="addBtn">추가</button>
-    <button id="deleteBtn">삭제</button>
-    <ol id="todoList"></ol>
+  <body class="bg-red-600 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+      <h1 class="text-2xl font-bold mb-4 text-red-600">Todo List</h1>
+      <div class="flex mb-4">
+        <input
+          type="text"
+          id="inputField"
+          class="flex-1 p-2 border rounded"
+          placeholder="할 일을 입력하세요"
+        />
+        <button id="addBtn" class="ml-2 p-2 bg-red-600 text-white rounded">
+          추가
+        </button>
+      </div>
+      <ul id="todoList" class="list-none p-0"></ul>
+      <button id="deleteBtn" class="mt-4 p-2 bg-red-600 text-white rounded">
+        삭제
+      </button>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,8 +1,29 @@
 li {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+li span {
+  flex: 1;
+  margin-left: 10px;
 }
 
 input[type="checkbox"] {
-  margin-right: 20px;
+  margin-right: 10px;
+}
+
+button.edit-btn {
+  background-color: #fbbf24;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button.edit-btn:hover {
+  background-color: #f59e0b;
 }
