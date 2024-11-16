@@ -3,17 +3,23 @@ const addBtn = document.getElementById("addBtn");
 const deleteBtn = document.getElementById("deleteBtn");
 const todoList = document.getElementById("todoList");
 
-// MARK: Add Button Event
-
-function addToItem() {
+function createTodoItem(text) {
   const todoContent = document.createElement("li");
   const checkbox = document.createElement("input");
+  const listItemText = document.createElement("span");
   checkbox.type = "checkbox";
+  listItemText.textContent = text;
 
-  const item = inputField.value;
+  todoContent.appendChild(checkbox);
+  todoContent.appendChild(listItemText);
+
+  return todoContent;
+}
+
+function addTodoItem() {
+  const item = inputField.value.trim();
   if (item !== "") {
-    todoContent.appendChild(checkbox);
-    todoContent.appendChild(document.createTextNode(item));
+    const todoContent = createTodoItem(item);
     inputField.value = "";
     todoList.appendChild(todoContent);
   } else {
@@ -21,7 +27,7 @@ function addToItem() {
   }
 }
 
-function deleteToItem() {
+function deleteTodoItems() {
   const todoContent = todoList.getElementsByTagName("li");
   for (let i = todoContent.length - 1; i >= 0; i--) {
     if (todoContent[i].getElementsByTagName("input")[0].checked) {
@@ -29,6 +35,9 @@ function deleteToItem() {
     }
   }
 }
+
+addBtn.addEventListener("click", addTodoItem);
+deleteBtn.addEventListener("click", deleteTodoItems);
 
 // MARK: Delete Button Event
 // deleteBtn.addEventListener("click", () => {
@@ -39,6 +48,3 @@ function deleteToItem() {
 //     }
 //   }
 // });
-
-addBtn.addEventListener("click", addToItem);
-deleteBtn.addEventListener("click", deleteToItem);
