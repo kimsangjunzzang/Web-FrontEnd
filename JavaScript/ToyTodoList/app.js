@@ -61,8 +61,8 @@ function addTodoItem() {
 }
 
 // Todo 항목 수정
-function editTodoItem(event) {
-  const listItem = event.target.parentElement;
+function editTodoItem(e) {
+  const listItem = e.target.parentElement;
   const listItemText = listItem.getElementsByTagName("span")[0];
   let text = prompt("수정할 내용을 입력해주세요", listItemText.textContent);
   if (text !== null && text.trim() !== "") {
