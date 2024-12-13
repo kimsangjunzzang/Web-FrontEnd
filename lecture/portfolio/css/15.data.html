@@ -1,23 +1,34 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Data Attributes</title>
-    <style>
-      div {
-        width: 100px;
-        height: 100px;
-        background-color: tomato;
-        margin-bottom: 50px;
-      }
-    </style>
-  </head>
-  <body>
-    <div>드림!!</div>
-    <div></div>
-    <span>드림!!</span>
-    <script></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Attributes</title>
+  <style>
+    div {
+      width: 100px;
+      height: 100px;
+      background-color: tomato;
+      margin-bottom: 50px;
+    }
+
+    div[data-display-name="dream"] {
+      background-color: skyblue;
+    }
+  </style>
+</head>
+
+<body>
+  <div data-index="1" data-display-name="dream">드림!!</div>
+  <div data-index="2" data-display-name="coding"></div>
+  <span data-index="3" data-display-name="dream">드림!!</span>
+  <script>
+    const dream = document.querySelector('div[data-display-name="dream"]');
+    console.log(dream.dataset);
+    console.log(dream.dataset.displayName);
+  </script>
+</body>
+
 </html>
