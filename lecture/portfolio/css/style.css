@@ -1,5 +1,12 @@
 /* Global */
 :root {
+  /* App Colors (한 단계 더 추상화 하여 유지보수성을 높임)*/
+  --color-primary: var(--color-black);
+  --color-primary-varient: var(--color-gray);
+  --color-accent: var(--color-blue);
+  --color-accent-varient: var(--color-orange);
+  --color-text: var(--color-white);
+
   /* Colors */
   --color-white: #ffffff;
   --color-black: #050a13;
@@ -31,7 +38,7 @@ ul {
 
 a {
   text-decoration: none;
-  color: var(--color-black);
+  color: var(--color-text);
 }
 
 button {
@@ -41,5 +48,5 @@ button {
 }
 
 button:focus {
-  outline: 1px solid var(--color-blue);
+  outline: 1px solid var(--color-accent);
 }
